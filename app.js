@@ -3,6 +3,7 @@ const path = require('path');
 
 const ChecklistsRouter = require('./src/routes/checklist');
 const rootRouter = require('./src/routes/index');
+const methodOverride = require('method-override');
 
 
 const app = express();
@@ -10,6 +11,7 @@ require('./config/database');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(methodOverride('_method', {methods: ['POST', 'GET']}));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
