@@ -5,6 +5,7 @@ const router = express.Router();
 const Checklist = require ('../models/checklist')
 
 router.get('/', async (req, res) => {
+    
  try {
     let checklist = await Checklist.find({});
     res.status(200).render('checklists/index', {checklist: checklist})  
@@ -47,7 +48,7 @@ router.post('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-     let checklists = await Checklist.findById(req.params.id);
+     let checklists = await Checklist.findById(req.params.id).populate('task');
      res.status(200).render('checklists/show', {checklists: checklists})
     } catch {
         res.status(500).render('pages/error', {errors: 'Erro ao carregar Checklist'});
