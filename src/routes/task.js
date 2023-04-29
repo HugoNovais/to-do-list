@@ -1,6 +1,7 @@
 const express = require('express');
 
 const checklistDepedentRoute = express.Router();
+const simpleRouter = express.Router();
 
 const Checklist = require ('../models/checklist');
 const Task = require ('../models/task');
@@ -13,6 +14,8 @@ checklistDepedentRoute.get('/:id/tasks/new', async(req, res) => {
         res.status(422).render('pages/error', {errors: 'Erro ao carrega o formulário'})
     }
 })
+
+
 
 checklistDepedentRoute.post('/:id/tasks', async(req, res) => {
     let { name } = req.body.task;
@@ -30,4 +33,21 @@ checklistDepedentRoute.post('/:id/tasks', async(req, res) => {
     }
 })
 
-module.exports = {checklistDepedent: checklistDepedentRoute}
+
+simpleRouter.delete('/:id', async(req, res) => {
+    try {
+        let tasks = await Task.findByIdAndDelete(req.params.id);
+        let checklist = await Checklist.findById(tasks.checklist);
+        let taskToRemove = checklist.task.indexOf(tasks._id);
+        checklist.task.splice(taskToRemove, 1);
+        checklist.save();
+        res.redirect(`/checklists/${checklist._id}`);
+    } catch (error) {
+        res.status(422).render('pages/error', {errors: 'Erro ao remover uma tarefa'})
+    }
+})
+
+module.exports = {
+    checklistDepedent: checklistDepedentRoute,
+    simple: simpleRouter
+}
